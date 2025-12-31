@@ -219,16 +219,46 @@
         document.getElementById('screen-game').style.display = 'none';
         document.getElementById('screen-result').style.display = 'block';
         const board = document.getElementById('leaderboard');
-        board.innerHTML = `<div class="label" style="margin-bottom:10px;">Категория ${selectedCat.id} | Итоги</div>`;
-        sessionResults.sort((a,b) => b.diff - a.diff).forEach((res, i) => {
-            const best = JSON.parse(localStorage.getItem(`rec_p${res.pNum}_c${selectedCat.id}`));
+        
+        board.innerHTML = `
+            <div class="label" style="margin-bottom:15px;">Категория ${selectedCat.id} | Таблица рекордов</div>
+            <!-- Заголовки таблицы -->
+            <div style="display: grid; grid-template-columns: 0.5fr 1.2fr 0.6fr 0.6fr 0.6fr 0.8fr; gap: 5px; font-size: 9px; font-weight: bold; color: var(--secondary); margin-bottom: 8px; padding: 0 5px; text-align: center; text-transform: uppercase;">
+                <div>Место</div>
+                <div style="text-align: left;">Игрок</div>
+                <div>Уг.</div>
+                <div>Неуг.</div>
+                <div>Разн.</div>
+                <div style="color: var(--accent);">Рекорд</div>
+            </div>
+        `;
+        
+        // 1. Собираем данные всех игроков, участвующих в сессии
+        let tableData = activePlayers.map(pNum => {
+            // Текущий результат в этой сессии
+            const current = sessionResults.find(r => r.pNum === pNum) || {win: 0, fail: 0, diff: 0};
+            // Лучший рекорд за все время в этой категории
+            const best = JSON.parse(localStorage.getItem(`rec_p${pNum}_c${selectedCat.id}`) || '{"diff":0, "win":0, "fail":0}');
+            return { pNum, current, best };
+        });
+
+        // 2. СОРТИРОВКА ПО РЕКОРДУ (от большего к меньшему)
+        tableData.sort((a, b) => b.best.diff - a.best.diff);
+
+        // 3. Отрисовка строк таблицы
+        tableData.forEach((item, i) => {
+            const isWinner = i === 0 && item.best.diff > 0;
             board.innerHTML += `
-                <div class="res-row">
-                    <div style="font-weight:800; font-size:18px;">Место ${i+1}: Игрок ${res.pNum}</div>
-                    <div style="color:var(--accent); font-weight:700; font-size:13px; white-space:nowrap;">Текущий: ${res.diff} (У:${res.win} | Н:${res.fail})</div>
-                    <div style="font-size:11px; color:var(--secondary); white-space:nowrap;">Рекорд: ${best.diff} (У:${best.win} | Н:${best.fail})</div>
+                <div style="display: grid; grid-template-columns: 0.5fr 1.2fr 0.6fr 0.6fr 0.6fr 0.8fr; gap: 5px; align-items: center; background: ${isWinner ? '#f0f9ff' : '#f8f8fa'}; border: ${isWinner ? '1px solid #c2e0ff' : '1px solid transparent'}; border-radius: 10px; margin-bottom: 6px; padding: 12px 5px; font-size: 12px; text-align: center;">
+                    <div style="font-weight: 800; color: ${isWinner ? 'var(--accent)' : 'inherit'};">${i + 1}</div>
+                    <div style="text-align: left; font-weight: 700;">Игрок ${item.pNum}</div>
+                    <div style="color: var(--secondary);">${item.current.win}</div>
+                    <div style="color: var(--secondary);">${item.current.fail}</div>
+                    <div style="font-weight: 600;">${item.current.diff}</div>
+                    <div style="font-weight: 800; color: var(--accent); background: #fff; border-radius: 6px; padding: 2px 0;">${item.best.diff}</div>
                 </div>`;
         });
+        
         const hasMistakes = activePlayers.some(p => playerMistakes[p].length > 0);
         document.getElementById('mistakesBtn').style.display = hasMistakes ? 'block' : 'none';
     }
