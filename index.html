@@ -1,280 +1,534 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Word Pairs: Championship</title>
     <style>
         :root {
-            --bg: #f2f2f7; --card-bg: #ffffff; --accent: #0071e3; --text: #1c1c1e;
-            --secondary: #8e8e93; --success: #34c759; --error: #ff3b30; --shadow: 0 10px 30px rgba(0,0,0,0.08);
+            --bg: #f2f2f7;
+            --card-bg: #ffffff;
+            --accent: #0071e3;
+            --text: #1c1c1e;
+            --secondary: #8e8e93;
+            --success: #34c759;
+            --error: #ff3b30;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
         }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-        .container { background: var(--card-bg); width: 95%; max-width: 500px; padding: 25px; border-radius: 32px; box-shadow: var(--shadow); text-align: center; }
-        h1 { font-size: 24px; margin: 0 0 20px 0; }
-        .label { font-size: 11px; text-transform: uppercase; color: var(--secondary); font-weight: 700; letter-spacing: 0.5px; margin-bottom: 5px; }
-        .player-select { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
-        .player-btn { background: #f8f8fa; border: 2px solid transparent; padding: 12px; border-radius: 12px; cursor: pointer; font-weight: 600; transition: 0.2s; }
-        .player-btn.active { border-color: var(--accent); color: var(--accent); background: #f0f7ff; }
-        .cat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 25px; }
-        .cat-btn { background: #f8f8fa; border: 1px solid #e5e5ea; padding: 10px 2px; border-radius: 10px; cursor: pointer; font-size: 10px; font-weight: 600; line-height: 1.2; }
-        .cat-btn.active { background: var(--text); border-color: var(--text); color: white; }
-        .stats-top { display: grid; grid-template-columns: 1fr 1.5fr 1fr; gap: 5px; margin-bottom: 20px; align-items: start; }
-        .stat-val { font-size: 16px; font-weight: 700; white-space: nowrap; }
-        .record-info { font-size: 11px; color: var(--secondary); white-space: nowrap; margin-top: 2px; }
-        .word-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .card { background: #f8f8fa; border: 2px solid transparent; padding: 20px 8px; border-radius: 16px; font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.2s; }
-        .card.selected { border-color: var(--accent); background: white; color: var(--accent); }
-        .card.wrong { border-color: var(--error); color: var(--error); text-decoration: line-through; }
-        .card.hidden { opacity: 0; pointer-events: none; transform: scale(0.9); }
-        
-        .action-btns { display: grid; grid-template-columns: 1fr 2fr; gap: 10px; margin-top: 10px; }
-        .start-btn { background: var(--accent); color: white; border: none; padding: 18px; border-radius: 18px; font-size: 18px; font-weight: 700; cursor: pointer; }
-        .reset-btn { background: #e5e5ea; color: var(--error); border: none; padding: 18px; border-radius: 18px; font-size: 14px; font-weight: 700; cursor: pointer; }
-        .start-btn:disabled { opacity: 0.2; }
-        
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: var(--card-bg);
+            width: 95%;
+            max-width: 500px;
+            padding: 25px;
+            border-radius: 32px;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin: 0 0 20px 0;
+        }
+
+        .label {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: var(--secondary);
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+        }
+
+        .player-select {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .player-btn {
+            background: #f8f8fa;
+            border: 2px solid transparent;
+            padding: 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+        .player-btn.active {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: #f0f7ff;
+        }
+
+        .cat-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 25px;
+        }
+
+        .cat-btn {
+            background: #f8f8fa;
+            border: 1px solid #e5e5ea;
+            padding: 10px 2px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 10px;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        .cat-btn.active {
+            background: var(--text);
+            border-color: var(--text);
+            color: white;
+        }
+
+        .stats-top {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr 1fr;
+            gap: 5px;
+            margin-bottom: 20px;
+            align-items: start;
+        }
+
+        .stat-val {
+            font-size: 16px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .record-info {
+            font-size: 11px;
+            color: var(--secondary);
+            white-space: nowrap;
+            margin-top: 2px;
+        }
+
+        .word-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .card {
+            background: #f8f8fa;
+            border: 2px solid transparent;
+            padding: 20px 8px;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .card.selected {
+            border-color: var(--accent);
+            background: white;
+            color: var(--accent);
+        }
+
+        .card.wrong {
+            border-color: var(--error);
+            color: var(--error);
+            text-decoration: line-through;
+        }
+
+        .card.hidden {
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(0.9);
+        }
+
+        .action-btns {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .start-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 18px;
+            border-radius: 18px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .reset-btn {
+            background: #e5e5ea;
+            color: var(--error);
+            border: none;
+            padding: 18px;
+            border-radius: 18px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .start-btn:disabled {
+            opacity: 0.2;
+        }
+
         /* Таблица стили */
-        .res-table-grid { display: grid; grid-template-columns: 0.4fr 1.1fr 0.5fr 0.5fr 0.5fr 0.7fr 0.7fr; gap: 4px; align-items: center; padding: 12px 4px; font-size: 11px; margin-bottom: 6px; border-radius: 10px; }
-        .header-grid { text-transform: uppercase; font-size: 8px; color: var(--secondary); font-weight: 800; margin-bottom: 5px; text-align: center; }
-        .btn-mistakes { background: #ff9500; color: white; border: none; width: 100%; padding: 15px; border-radius: 15px; font-weight: 700; cursor: pointer; margin-top: 10px; display: none; }
+        .res-table-grid {
+            display: grid;
+            grid-template-columns: 0.4fr 1.1fr 0.5fr 0.5fr 0.5fr 0.7fr 0.7fr;
+            gap: 4px;
+            align-items: center;
+            padding: 12px 4px;
+            font-size: 11px;
+            margin-bottom: 6px;
+            border-radius: 10px;
+        }
+
+        .header-grid {
+            text-transform: uppercase;
+            font-size: 8px;
+            color: var(--secondary);
+            font-weight: 800;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+
+        .btn-mistakes {
+            background: #ff9500;
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 15px;
+            border-radius: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 10px;
+            display: none;
+        }
+
+        /* Кнопка Помощь */
+        .btn-help {
+            background: none;
+            border: 2px solid var(--accent);
+            color: var(--accent);
+            width: 100%;
+            padding: 15px;
+            border-radius: 18px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 15px;
+            display: none;
+            /* По умолчанию скрыта, покажем только в режиме ошибок */
+            transition: 0.2s;
+        }
+
+        .btn-help:active {
+            background: #f0f7ff;
+            transform: scale(0.98);
+        }
+
+        /* Стиль для подсветки правильной пары */
+        .card.highlight-correct {
+            background: #eefbf2 !important;
+            border-color: var(--success) !important;
+            color: var(--success) !important;
+            box-shadow: 0 0 15px rgba(52, 199, 89, 0.2);
+        }
     </style>
 </head>
+
 <body>
 
-<div class="container" id="app">
-    <!-- ЭКРАН 1 -->
-    <div id="screen-setup">
-        <h1>Word Pairs Challenge</h1>
-        <div class="label">Выберите игроков</div>
-        <div class="player-select">
-            <button class="player-btn" onclick="togglePlayer(1)">Игрок 1</button>
-            <button class="player-btn" onclick="togglePlayer(2)">Игрок 2</button>
-            <button class="player-btn" onclick="togglePlayer(3)">Игрок 3</button>
+    <div class="container" id="app">
+        <!-- ЭКРАН 1 -->
+        <div id="screen-setup">
+            <h1>Word Pairs Challenge</h1>
+            <div class="label">Выберите игроков</div>
+            <div class="player-select">
+                <button class="player-btn" onclick="togglePlayer(1)">Игрок 1</button>
+                <button class="player-btn" onclick="togglePlayer(2)">Игрок 2</button>
+                <button class="player-btn" onclick="togglePlayer(3)">Игрок 3</button>
+            </div>
+            <div class="label">Выберите категорию</div>
+            <div class="cat-grid" id="catGrid"></div>
+            <div class="action-btns">
+                <button class="reset-btn" onclick="fullReset()">СБРОС</button>
+                <button id="mainStartBtn" class="start-btn" onclick="startCompetition()" disabled>СТАРТ</button>
+            </div>
         </div>
-        <div class="label">Выберите категорию</div>
-        <div class="cat-grid" id="catGrid"></div>
-        <div class="action-btns">
-            <button class="reset-btn" onclick="fullReset()">СБРОС</button>
-            <button id="mainStartBtn" class="start-btn" onclick="startCompetition()" disabled>СТАРТ</button>
+
+        <!-- ЭКРАН 2 -->
+        <div id="screen-game" style="display:none;">
+            <div class="stats-top">
+                <div style="text-align:left">
+                    <div class="label" id="modeLabel">Таймер</div>
+                    <div class="stat-val" id="timerDisplay">0:00</div>
+                </div>
+                <div>
+                    <div class="label" id="recordPlayerLabel">Рекорд</div>
+                    <div class="record-info" id="recordStats">У: 0 | Н: 0</div>
+                </div>
+                <div style="text-align:right">
+                    <div class="label">Текущий</div>
+                    <div class="stat-val" id="currentStats" style="color:var(--accent)">У: 0 | Н: 0</div>
+                </div>
+            </div>
+            <div class="word-grid" id="wordGrid"></div>
+            <!-- КНОПКА ПОМОЩЬ (Добавляем сюда) -->
+            <button id="helpBtn" class="btn-help" onclick="provideHelp()">ПОМОЩЬ</button>
+        </div>
+
+        <!-- ЭКРАН 3 -->
+        <div id="screen-result" style="display:none;">
+            <h1>Результаты</h1>
+            <div id="leaderboard"></div>
+            <button class="btn-mistakes" id="mistakesBtn" onclick="startCorrection()">Работа над ошибками</button>
+            <button class="start-btn" style="background:#8e8e93; width:100%;" onclick="location.reload()">В
+                Меню</button>
         </div>
     </div>
 
-    <!-- ЭКРАН 2 -->
-    <div id="screen-game" style="display:none;">
-        <div class="stats-top">
-            <div style="text-align:left"><div class="label" id="modeLabel">Таймер</div><div class="stat-val" id="timerDisplay">0:00</div></div>
-            <div><div class="label" id="recordPlayerLabel">Рекорд</div><div class="record-info" id="recordStats">У: 0 | Н: 0</div></div>
-            <div style="text-align:right"><div class="label">Текущий</div><div class="stat-val" id="currentStats" style="color:var(--accent)">У: 0 | Н: 0</div></div>
-        </div>
-        <div class="word-grid" id="wordGrid"></div>
-    </div>
+    <script>
+        const times = [15, 30, 60, 180], bases = [500, 1000, 2000, 3000];
+        const DATA_URLS = { 500: '500.json', 1000: '1000.json', 2000: '2000.json', 3000: '3000.json' };
+        let wordsDB = {}, activePlayers = [], selectedCat = null, currentPlayerIndex = 0;
+        let gameScore = { win: 0, fail: 0 }, gameInterval, sessionResults = [];
+        let playerMistakes = { 1: [], 2: [], 3: [] }, isCorrectionMode = false;
 
-    <!-- ЭКРАН 3 -->
-    <div id="screen-result" style="display:none;">
-        <h1>Результаты</h1>
-        <div id="leaderboard"></div>
-        <button class="btn-mistakes" id="mistakesBtn" onclick="startCorrection()">Работа над ошибками</button>
-        <button class="start-btn" style="background:#8e8e93; width:100%;" onclick="location.reload()">В Меню</button>
-    </div>
-</div>
+        // Генерация категорий
+        const catGrid = document.getElementById('catGrid');
+        let cId = 1;
+        times.forEach(t => {
+            bases.forEach(b => {
+                const btn = document.createElement('button');
+                btn.className = 'cat-btn';
+                btn.innerHTML = `Кат. ${cId}<br>${t}с | ${b}`;
+                const curId = cId, curT = t, curB = b;
+                btn.onclick = () => {
+                    selectedCat = { id: curId, time: curT, base: curB };
+                    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    checkBtnState();
+                };
+                catGrid.appendChild(btn); cId++;
+            });
+        });
 
-<script>
-    const times = [15, 30, 60, 180], bases = [500, 1000, 2000, 3000];
-    const DATA_URLS = { 500: '500.json', 1000: '1000.json', 2000: '2000.json', 3000: '3000.json' };
-    let wordsDB = {}, activePlayers = [], selectedCat = null, currentPlayerIndex = 0;
-    let gameScore = { win: 0, fail: 0 }, gameInterval, sessionResults = [];
-    let playerMistakes = { 1: [], 2: [], 3: [] }, isCorrectionMode = false;
-
-    // Генерация категорий
-    const catGrid = document.getElementById('catGrid');
-    let cId = 1;
-    times.forEach(t => {
-        bases.forEach(b => {
-            const btn = document.createElement('button');
-            btn.className = 'cat-btn';
-            btn.innerHTML = `Кат. ${cId}<br>${t}с | ${b}`;
-            const curId = cId, curT = t, curB = b;
-            btn.onclick = () => {
-                selectedCat = { id: curId, time: curT, base: curB };
-                document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+        function togglePlayer(num) {
+            const btn = document.querySelectorAll('.player-btn')[num - 1];
+            if (activePlayers.includes(num)) {
+                activePlayers = activePlayers.filter(p => p !== num);
+                btn.classList.remove('active');
+            } else {
+                activePlayers.push(num);
                 btn.classList.add('active');
-                checkBtnState();
-            };
-            catGrid.appendChild(btn); cId++;
-        });
-    });
-
-    function togglePlayer(num) {
-        const btn = document.querySelectorAll('.player-btn')[num-1];
-        if (activePlayers.includes(num)) {
-            activePlayers = activePlayers.filter(p => p !== num);
-            btn.classList.remove('active');
-        } else {
-            activePlayers.push(num);
-            btn.classList.add('active');
+            }
+            checkBtnState();
         }
-        checkBtnState();
-    }
 
-    function checkBtnState() {
-        document.getElementById('mainStartBtn').disabled = !(activePlayers.length > 0 && selectedCat);
-    }
-
-    function fullReset() {
-        if (confirm("ВНИМАНИЕ: Все рекорды и попытки всех игроков будут удалены. Продолжить?")) {
-            localStorage.clear();
-            location.reload();
+        function checkBtnState() {
+            document.getElementById('mainStartBtn').disabled = !(activePlayers.length > 0 && selectedCat);
         }
-    }
 
-    async function startCompetition() {
-        if (!wordsDB[selectedCat.base]) {
-            document.getElementById('mainStartBtn').textContent = "...";
-            const r = await fetch(DATA_URLS[selectedCat.base]);
-            wordsDB[selectedCat.base] = await r.json();
+        function fullReset() {
+            if (confirm("ВНИМАНИЕ: Все рекорды и попытки всех игроков будут удалены. Продолжить?")) {
+                localStorage.clear();
+                location.reload();
+            }
         }
-        sessionResults = [];
-        currentPlayerIndex = 0;
-        startPlayerTurn();
-    }
 
-    function startPlayerTurn() {
-        const pNum = activePlayers[currentPlayerIndex];
-        gameScore = { win: 0, fail: 0 }; isCorrectionMode = false;
-        document.getElementById('screen-setup').style.display = 'none';
-        document.getElementById('screen-result').style.display = 'none';
-        document.getElementById('screen-game').style.display = 'block';
-        document.getElementById('modeLabel').textContent = "Таймер";
-        document.getElementById('recordPlayerLabel').textContent = `Рекорд Игрок ${pNum}`;
-        
-        const rec = JSON.parse(localStorage.getItem(`rec_p${pNum}_c${selectedCat.id}`) || '{"diff":-99, "win":0, "fail":0, "att":0}');
-        document.getElementById('recordStats').textContent = rec.diff === -99 ? "Нет рекорда" : `У: ${rec.win} | Н: ${rec.fail}`;
-        
-        updateStatsUI();
-        let timeLeft = selectedCat.time;
-        updateTimerUI(timeLeft);
-        gameInterval = setInterval(() => {
-            timeLeft--; updateTimerUI(timeLeft);
-            if (timeLeft <= 0) { clearInterval(gameInterval); finishPlayerTurn(); }
-        }, 1000);
-        renderBatch();
-    }
-
-    function renderBatch() {
-        const grid = document.getElementById('wordGrid'); grid.innerHTML = '';
-        const pNum = activePlayers[currentPlayerIndex];
-        let source = isCorrectionMode ? playerMistakes[pNum] : wordsDB[selectedCat.base];
-        let batch = [...source].sort(() => 0.5 - Math.random()).slice(0, 5);
-        if (batch.length === 0 && isCorrectionMode) { finishCorrection(); return; }
-        let enCards = batch.map(p => ({en: p.en, ru: p.ru}));
-        let ruCards = [...enCards].sort(() => 0.5 - Math.random());
-        let activeEn = null, solved = 0;
-        enCards.forEach(pair => {
-            const bEn = document.createElement('button'); bEn.className = 'card'; bEn.textContent = pair.en;
-            bEn.onclick = () => {
-                if (bEn.classList.contains('hidden') || bEn.classList.contains('wrong')) return;
-                speak(pair.en); document.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
-                bEn.classList.add('selected'); activeEn = { btn: bEn, pair };
-            };
-            grid.appendChild(bEn);
-            const bRu = document.createElement('button'); bRu.className = 'card'; bRu.textContent = ruCards.shift().ru;
-            bRu.onclick = () => {
-                if (!activeEn || bRu.classList.contains('hidden')) return;
-                if (activeEn.pair.ru === bRu.textContent) {
-                    gameScore.win++; bRu.classList.add('hidden'); activeEn.btn.classList.add('hidden'); solved++;
-                    if (isCorrectionMode) playerMistakes[pNum] = playerMistakes[pNum].filter(m => m.en !== activeEn.pair.en);
-                    if (solved === batch.length) setTimeout(renderBatch, 300);
-                } else {
-                    gameScore.fail++; activeEn.btn.classList.add('wrong');
-                    if (!playerMistakes[pNum].find(m => m.en === activeEn.pair.en)) playerMistakes[pNum].push(activeEn.pair);
-                    solved++; if (solved === batch.length) setTimeout(renderBatch, 600);
-                }
-                activeEn = null; updateStatsUI();
-            };
-            grid.appendChild(bRu);
-        });
-    }
-
-    function finishPlayerTurn() {
-        const pNum = activePlayers[currentPlayerIndex];
-        const diff = gameScore.win - gameScore.fail;
-        sessionResults.push({ pNum, win: gameScore.win, fail: gameScore.fail, diff });
-        
-        const recKey = `rec_p${pNum}_c${selectedCat.id}`;
-        let rec = JSON.parse(localStorage.getItem(recKey) || '{"diff":-99, "win":0, "fail":0, "att":0}');
-        rec.att++; // Инкремент попыток
-        if (diff > rec.diff) { rec.diff = diff; rec.win = gameScore.win; rec.fail = gameScore.fail; }
-        localStorage.setItem(recKey, JSON.stringify(rec));
-
-        currentPlayerIndex++;
-        if (currentPlayerIndex < activePlayers.length) {
-            alert(`Игрок ${activePlayers[currentPlayerIndex-1]} завершил. Очередь Игрока ${activePlayers[currentPlayerIndex]}`);
+        async function startCompetition() {
+            if (!wordsDB[selectedCat.base]) {
+                document.getElementById('mainStartBtn').textContent = "...";
+                const r = await fetch(DATA_URLS[selectedCat.base]);
+                wordsDB[selectedCat.base] = await r.json();
+            }
+            sessionResults = [];
+            currentPlayerIndex = 0;
             startPlayerTurn();
-        } else { showLeaderboard(); }
-    }
+        }
 
-    function showLeaderboard() {
-        document.getElementById('screen-game').style.display = 'none';
-        document.getElementById('screen-result').style.display = 'block';
-        const board = document.getElementById('leaderboard');
-        
-        board.innerHTML = `<div class="label" style="margin-bottom:10px;">Категория ${selectedCat.id} | Таблица Чемпионата</div>
+        function startPlayerTurn() {
+            const pNum = activePlayers[currentPlayerIndex];
+            gameScore = { win: 0, fail: 0 }; isCorrectionMode = false;
+            document.getElementById('screen-setup').style.display = 'none';
+            document.getElementById('screen-result').style.display = 'none';
+            document.getElementById('screen-game').style.display = 'block';
+            document.getElementById('modeLabel').textContent = "Таймер";
+            document.getElementById('recordPlayerLabel').textContent = `Рекорд Игрок ${pNum}`;
+            document.getElementById('helpBtn').style.display = 'none'; // Скрываем в обычной игре
+
+            const rec = JSON.parse(localStorage.getItem(`rec_p${pNum}_c${selectedCat.id}`) || '{"diff":-99, "win":0, "fail":0, "att":0}');
+            document.getElementById('recordStats').textContent = rec.diff === -99 ? "Нет рекорда" : `У: ${rec.win} | Н: ${rec.fail}`;
+
+            updateStatsUI();
+            let timeLeft = selectedCat.time;
+            updateTimerUI(timeLeft);
+            gameInterval = setInterval(() => {
+                timeLeft--; updateTimerUI(timeLeft);
+                if (timeLeft <= 0) { clearInterval(gameInterval); finishPlayerTurn(); }
+            }, 1000);
+            renderBatch();
+        }
+
+        function renderBatch() {
+            const grid = document.getElementById('wordGrid'); grid.innerHTML = ''; activeEn = null; // Сбрасываем выбор
+            const pNum = activePlayers[currentPlayerIndex];
+            let source = isCorrectionMode ? playerMistakes[pNum] : wordsDB[selectedCat.base];
+            let batch = [...source].sort(() => 0.5 - Math.random()).slice(0, 5);
+            if (batch.length === 0 && isCorrectionMode) { finishCorrection(); return; }
+            let enCards = batch.map(p => ({ en: p.en, ru: p.ru }));
+            let ruCards = [...enCards].sort(() => 0.5 - Math.random());
+            let activeEn = null, solved = 0;
+            enCards.forEach(pair => {
+                const bEn = document.createElement('button'); bEn.className = 'card'; bEn.textContent = pair.en;
+                bEn.onclick = () => {
+                    if (bEn.classList.contains('hidden') || bEn.classList.contains('wrong')) return;
+                    speak(pair.en); document.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
+                    bEn.classList.add('selected'); activeEn = { btn: bEn, pair };
+                };
+                grid.appendChild(bEn);
+                const bRu = document.createElement('button'); bRu.className = 'card'; bRu.textContent = ruCards.shift().ru;
+                bRu.onclick = () => {
+                    if (!activeEn || bRu.classList.contains('hidden')) return;
+                    if (activeEn.pair.ru === bRu.textContent) {
+                        gameScore.win++; bRu.classList.add('hidden'); activeEn.btn.classList.add('hidden'); solved++;
+                        if (isCorrectionMode) playerMistakes[pNum] = playerMistakes[pNum].filter(m => m.en !== activeEn.pair.en);
+                        if (solved === batch.length) setTimeout(renderBatch, 300);
+                    } else {
+                        gameScore.fail++; activeEn.btn.classList.add('wrong');
+                        if (!playerMistakes[pNum].find(m => m.en === activeEn.pair.en)) playerMistakes[pNum].push(activeEn.pair);
+                        solved++; if (solved === batch.length) setTimeout(renderBatch, 600);
+                    }
+                    activeEn = null; updateStatsUI();
+                };
+                grid.appendChild(bRu);
+            });
+        }
+
+        function finishPlayerTurn() {
+            const pNum = activePlayers[currentPlayerIndex];
+            const diff = gameScore.win - gameScore.fail;
+            sessionResults.push({ pNum, win: gameScore.win, fail: gameScore.fail, diff });
+
+            const recKey = `rec_p${pNum}_c${selectedCat.id}`;
+            let rec = JSON.parse(localStorage.getItem(recKey) || '{"diff":-99, "win":0, "fail":0, "att":0}');
+            rec.att++; // Инкремент попыток
+            if (diff > rec.diff) { rec.diff = diff; rec.win = gameScore.win; rec.fail = gameScore.fail; }
+            localStorage.setItem(recKey, JSON.stringify(rec));
+
+            currentPlayerIndex++;
+            if (currentPlayerIndex < activePlayers.length) {
+                alert(`Игрок ${activePlayers[currentPlayerIndex - 1]} завершил. Очередь Игрока ${activePlayers[currentPlayerIndex]}`);
+                startPlayerTurn();
+            } else { showLeaderboard(); }
+        }
+
+        function showLeaderboard() {
+            document.getElementById('screen-game').style.display = 'none';
+            document.getElementById('screen-result').style.display = 'block';
+            const board = document.getElementById('leaderboard');
+
+            board.innerHTML = `<div class="label" style="margin-bottom:10px;">Категория ${selectedCat.id} | Таблица Чемпионата</div>
             <div class="res-table-grid header-grid">
                 <div>Место</div><div style="text-align:left">Игрок</div><div>Уг.</div><div>Неуг.</div><div>Разн.</div><div>Рекорд</div><div>Поп.</div>
             </div>`;
-        
-        // Собираем данные по ВСЕМ 3 игрокам для этой категории
-        let globalData = [1, 2, 3].map(p => {
-            const current = sessionResults.find(r => r.pNum === p) || {win: '-', fail: '-', diff: '-'};
-            const rec = JSON.parse(localStorage.getItem(`rec_p${p}_c${selectedCat.id}`) || '{"diff":-99, "win":0, "fail":0, "att":0}');
-            return { pNum: p, current, rec };
-        });
 
-        // Сортировка по лучшему рекорду
-        globalData.sort((a,b) => b.rec.diff - a.rec.diff).forEach((item, i) => {
-            const isPlayingNow = activePlayers.includes(item.pNum);
-            const bestDiff = item.rec.diff === -99 ? 0 : item.rec.diff;
-            board.innerHTML += `
+            // Собираем данные по ВСЕМ 3 игрокам для этой категории
+            let globalData = [1, 2, 3].map(p => {
+                const current = sessionResults.find(r => r.pNum === p) || { win: '-', fail: '-', diff: '-' };
+                const rec = JSON.parse(localStorage.getItem(`rec_p${p}_c${selectedCat.id}`) || '{"diff":-99, "win":0, "fail":0, "att":0}');
+                return { pNum: p, current, rec };
+            });
+
+            // Сортировка по лучшему рекорду
+            globalData.sort((a, b) => b.rec.diff - a.rec.diff).forEach((item, i) => {
+                const isPlayingNow = activePlayers.includes(item.pNum);
+                const bestDiff = item.rec.diff === -99 ? 0 : item.rec.diff;
+                board.innerHTML += `
                 <div class="res-table-grid" style="background: ${isPlayingNow ? '#fff' : '#f1f1f4'}; border: ${isPlayingNow ? '1px solid var(--accent)' : 'none'};">
-                    <div style="font-weight:800">${i+1}</div>
+                    <div style="font-weight:800">${i + 1}</div>
                     <div style="text-align:left; font-weight:700">Игрок ${item.pNum}</div>
                     <div>${item.current.win}</div><div>${item.current.fail}</div><div>${item.current.diff}</div>
                     <div style="color:var(--accent); font-weight:800">${bestDiff}</div>
                     <div style="color:var(--secondary)">${item.rec.att}</div>
                 </div>`;
-        });
-        
-        const hasMistakes = activePlayers.some(p => playerMistakes[p].length > 0);
-        document.getElementById('mistakesBtn').style.display = hasMistakes ? 'block' : 'none';
-    }
+            });
 
-    function startCorrection() {
-        const pWithErrors = activePlayers.find(p => playerMistakes[p].length > 0);
-        if (!pWithErrors) { showLeaderboard(); return; }
-        currentPlayerIndex = activePlayers.indexOf(pWithErrors);
-        isCorrectionMode = true; gameScore = { win: 0, fail: 0 };
-        document.getElementById('screen-result').style.display = 'none';
-        document.getElementById('screen-game').style.display = 'block';
-        document.getElementById('modeLabel').textContent = "РЕЖИМ"; document.getElementById('timerDisplay').textContent = "ОШИБКИ";
-        renderBatch();
-    }
+            const hasMistakes = activePlayers.some(p => playerMistakes[p].length > 0);
+            document.getElementById('mistakesBtn').style.display = hasMistakes ? 'block' : 'none';
+        }
 
-    function finishCorrection() {
-        const pNum = activePlayers[currentPlayerIndex];
-        const next = activePlayers.slice(activePlayers.indexOf(pNum) + 1).find(p => playerMistakes[p].length > 0);
-        if (next) {
-            alert(`Игрок ${pNum} закончил. Очередь Игрока ${next}`);
-            currentPlayerIndex = activePlayers.indexOf(next); renderBatch();
-        } else { alert("Все ошибки исправлены!"); showLeaderboard(); }
-    }
+        function startCorrection() {
+            const pWithErrors = activePlayers.find(p => playerMistakes[p].length > 0);
+            if (!pWithErrors) { showLeaderboard(); return; }
+            currentPlayerIndex = activePlayers.indexOf(pWithErrors);
+            isCorrectionMode = true; gameScore = { win: 0, fail: 0 };
+            document.getElementById('screen-result').style.display = 'none';
+            document.getElementById('screen-game').style.display = 'block';
+            document.getElementById('modeLabel').textContent = "РЕЖИМ"; document.getElementById('timerDisplay').textContent = "ОШИБКИ";
+            document.getElementById('helpBtn').style.display = 'block'; // Показываем только тут
+            renderBatch();
+        }
 
-    function speak(t) {
-        const m = new SpeechSynthesisUtterance(t); m.lang = 'en-US'; m.rate = 0.9;
-        window.speechSynthesis.cancel(); window.speechSynthesis.speak(m);
-    }
-    function updateTimerUI(t) { document.getElementById('timerDisplay').textContent = `0:${t<10?'0':''}${t}`; }
-    function updateStatsUI() { document.getElementById('currentStats').textContent = `У: ${gameScore.win} | Н: ${gameScore.fail}`; }
-</script>
+        function finishCorrection() {
+            const pNum = activePlayers[currentPlayerIndex];
+            const next = activePlayers.slice(activePlayers.indexOf(pNum) + 1).find(p => playerMistakes[p].length > 0);
+            if (next) {
+                alert(`Игрок ${pNum} закончил. Очередь Игрока ${next}`);
+                currentPlayerIndex = activePlayers.indexOf(next); renderBatch();
+            } else { alert("Все ошибки исправлены!"); showLeaderboard(); }
+        }
+
+        function speak(t) {
+            const m = new SpeechSynthesisUtterance(t); m.lang = 'en-US'; m.rate = 0.9;
+            window.speechSynthesis.cancel(); window.speechSynthesis.speak(m);
+        }
+        function updateTimerUI(t) { document.getElementById('timerDisplay').textContent = `0:${t < 10 ? '0' : ''}${t}`; }
+        function updateStatsUI() { document.getElementById('currentStats').textContent = `У: ${gameScore.win} | Н: ${gameScore.fail}`; }
+        function provideHelp() {
+            // Проверяем, выбрано ли английское слово (activeEn создается в логике клика)
+            // В твоем коде объект называется activeEn (из функции renderBatch)
+            if (!activeEn) {
+                alert("Сначала нажми на английское слово!");
+                return;
+            }
+
+            // Ищем все кнопки перевода на экране
+            const allCards = document.querySelectorAll('.card');
+            allCards.forEach(card => {
+                // Если текст кнопки совпадает с правильным русским переводом из объекта activeEn
+                if (card.textContent === activeEn.pair.ru) {
+                    card.classList.add('highlight-correct');
+                    // Убираем подсветку через 1.5 секунды
+                    setTimeout(() => card.classList.remove('highlight-correct'), 1500);
+                }
+            });
+        }
+
+    </script>
 </body>
+
 </html>
