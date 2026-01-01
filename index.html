@@ -316,6 +316,7 @@
         let wordsDB = {}, activePlayers = [], selectedCat = null, currentPlayerIndex = 0;
         let gameScore = { win: 0, fail: 0 }, gameInterval, sessionResults = [];
         let playerMistakes = { 1: [], 2: [], 3: [] }, isCorrectionMode = false;
+        let activeEn = null; // Убедись, что эта строка есть!
 
         // Генерация категорий
         const catGrid = document.getElementById('catGrid');
@@ -394,39 +395,74 @@
         }
 
         function renderBatch() {
-            const grid = document.getElementById('wordGrid'); grid.innerHTML = ''; activeEn = null; // Сбрасываем выбор
-            const pNum = activePlayers[currentPlayerIndex];
-            let source = isCorrectionMode ? playerMistakes[pNum] : wordsDB[selectedCat.base];
-            let batch = [...source].sort(() => 0.5 - Math.random()).slice(0, 5);
-            if (batch.length === 0 && isCorrectionMode) { finishCorrection(); return; }
-            let enCards = batch.map(p => ({ en: p.en, ru: p.ru }));
-            let ruCards = [...enCards].sort(() => 0.5 - Math.random());
-            let activeEn = null, solved = 0;
-            enCards.forEach(pair => {
-                const bEn = document.createElement('button'); bEn.className = 'card'; bEn.textContent = pair.en;
-                bEn.onclick = () => {
-                    if (bEn.classList.contains('hidden') || bEn.classList.contains('wrong')) return;
-                    speak(pair.en); document.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
-                    bEn.classList.add('selected'); activeEn = { btn: bEn, pair };
-                };
-                grid.appendChild(bEn);
-                const bRu = document.createElement('button'); bRu.className = 'card'; bRu.textContent = ruCards.shift().ru;
-                bRu.onclick = () => {
-                    if (!activeEn || bRu.classList.contains('hidden')) return;
-                    if (activeEn.pair.ru === bRu.textContent) {
-                        gameScore.win++; bRu.classList.add('hidden'); activeEn.btn.classList.add('hidden'); solved++;
-                        if (isCorrectionMode) playerMistakes[pNum] = playerMistakes[pNum].filter(m => m.en !== activeEn.pair.en);
-                        if (solved === batch.length) setTimeout(renderBatch, 300);
-                    } else {
-                        gameScore.fail++; activeEn.btn.classList.add('wrong');
-                        if (!playerMistakes[pNum].find(m => m.en === activeEn.pair.en)) playerMistakes[pNum].push(activeEn.pair);
-                        solved++; if (solved === batch.length) setTimeout(renderBatch, 600);
-                    }
-                    activeEn = null; updateStatsUI();
-                };
-                grid.appendChild(bRu);
-            });
-        }
+    const grid = document.getElementById('wordGrid');
+    if (!grid) return; // Защита от ошибок
+    grid.innerHTML = '';
+    activeEn = null; // Сбрасываем старый выбор
+
+    const pNum = activePlayers[currentPlayerIndex];
+    let source = isCorrectionMode ? playerMistakes[pNum] : wordsDB[selectedCat.base];
+    
+    // Если в режиме ошибок слова закончились
+    if (isCorrectionMode && source.length === 0) { 
+        finishCorrection(); 
+        return; 
+    }
+
+    // Берем 5 пар
+    let batch = [...source].sort(() => 0.5 - Math.random()).slice(0, 5);
+    
+    let enCards = batch.map(p => ({en: p.en, ru: p.ru}));
+    let ruCards = [...enCards].sort(() => 0.5 - Math.random());
+    let solved = 0;
+
+    enCards.forEach(pair => {
+        // Создаем английскую карточку
+        const bEn = document.createElement('button');
+        bEn.className = 'card'; 
+        bEn.textContent = pair.en;
+        bEn.onclick = () => {
+            if (bEn.classList.contains('hidden') || bEn.classList.contains('wrong')) return;
+            speak(pair.en);
+            document.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
+            bEn.classList.add('selected');
+            activeEn = { btn: bEn, pair: pair }; // Запоминаем выбор
+        };
+        grid.appendChild(bEn);
+
+        // Создаем русскую карточку
+        const bRu = document.createElement('button');
+        bRu.className = 'card'; 
+        bRu.textContent = ruCards.shift().ru;
+        bRu.onclick = () => {
+            if (!activeEn || bRu.classList.contains('hidden')) return;
+            
+            if (activeEn.pair.ru === bRu.textContent) {
+                // УСПЕХ
+                gameScore.win++;
+                bRu.classList.add('hidden');
+                activeEn.btn.classList.add('hidden');
+                solved++;
+                if (isCorrectionMode) {
+                    playerMistakes[pNum] = playerMistakes[pNum].filter(m => m.en !== activeEn.pair.en);
+                }
+                if (solved === batch.length) setTimeout(renderBatch, 300);
+            } else {
+                // ОШИБКА
+                gameScore.fail++;
+                activeEn.btn.classList.add('wrong');
+                if (!playerMistakes[pNum].find(m => m.en === activeEn.pair.en)) {
+                    playerMistakes[pNum].push(activeEn.pair);
+                }
+                solved++;
+                if (solved === batch.length) setTimeout(renderBatch, 600);
+            }
+            activeEn = null;
+            updateStatsUI();
+        };
+        grid.appendChild(bRu);
+    });
+}
 
         function finishPlayerTurn() {
             const pNum = activePlayers[currentPlayerIndex];
